@@ -137,7 +137,7 @@ class Leaf implements BST {
     }
 
     public String toString() {
-	return "()";
+	return "";
     }
 
 }
@@ -167,8 +167,10 @@ class Branch implements BST {
     public boolean member(int elt) {
 	if(elt == key) {
 	    return true;
+	} else if(elt < key) {
+	    return left.member(elt);
 	} else {
-	    return left.member(elt) || right.member(elt);
+	    return right.member(elt);
 	}
     }
 
@@ -193,11 +195,7 @@ class Branch implements BST {
     }
 
     public BST union(BST u) {
-	if(!u.member(key)) {
-	    return u.union(left).union(right).add(key);	
-	} else {
-	    return u.union(left).union(right);
-	}
+	return u.union(left).union(right).add(key);	
     }
 
     public BST inter(BST u) {
@@ -210,23 +208,24 @@ class Branch implements BST {
 
     public BST diff(BST u) {
 	if(u.member(key)) {
-	    return left.union(right).inter(u);
+	    return left.union(right).diff(u);
 	} else {
-	    return new Branch(left.inter(u), key, right.inter(u));
+	    return new Branch(left.diff(u), key, right.diff(u));
 	}
     }
 
     public boolean equal(BST u) {
-	return this.subset(u) || u.subset(this);
+	return this.subset(u) && u.subset(this);
     }
     
+    
     public boolean subset(BST u) {
-	return u.member(key) || left.subset(u) || right.subset(u);
+	return u.member(key) && left.subset(u) && right.subset(u);
     }
 
     public String toString() {
-	return  "" + key + ", " + left.toString() + 
-	    ", " + right.toString();
+	return  "{" + key + " " + left.toString() + 
+	    " " + right.toString() + "}";
     }
 
 } 
@@ -242,10 +241,32 @@ class Tests {
 	Branch b2 = new Branch(b1, 2, b3);
 	Branch b8 = new Branch(b7, 8, b9);
 	Branch b5 = new Branch(b2, 5, b8);
-	System.out.println(b5);
-	System.out.println(b5.add(4));
-	System.out.println(b5.cardinality());
-	System.out.println(b5.member(7));
-	System.out.println(b5.member(12));
+
+	BST c = new Leaf();
+	c = c.add(5).add(2).add(3).add(7).add(1);
+	BST d = c.add(3).add(1).add(2).add(5).add(7);
+
+	
+	System.out.println("b5 should contain 1,2,3,7,9,2,8,5 - Does contain:\n" + b5);
+	System.out.println("should add 4 to previous BST to the left of 5"
+			   + b5.add(4));
+	System.out.println("Cardinality of b5 should be 7, is " + b5.cardinality());
+	System.out.println("b5.member(7) should return true, does return:\n"
+			   + b5.member(7));
+	System.out.println("b5.member(12) should return false, does return:\n"
+			   + b5.member(12));
+	System.out.println("c should contain 1,2,3,5,7 - Does contain:\n" + c);
+	System.out.println("b5.subset(c4) should return false, does return:\n"
+			   + b5.subset(c));
+	System.out.println("c.subset(b5) should return true, does return:\n"
+			   + c.subset(b5));
+	System.out.println("c.union(b5) should return {1,2,3,5,7,8,9}, does return:\n"
+			   + c.union(b5));
+	System.out.println("c.inter(b5) should return c, does return:\n"
+			   + c.inter(b5));
+	System.out.println("c.equal(d) should return true, does return:\n " 
+			   + c.equal(d));
+	System.out.println("c.remove(5) should return {1,2,3,7}, does return:\n"
+			   + c.remove(5));
     }
 }
