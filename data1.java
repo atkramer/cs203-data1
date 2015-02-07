@@ -205,13 +205,10 @@ class Branch implements BST {
 	    return left.union(right).inter(u);
 	}
     }
-
+    
+    //CHANGED
     public BST diff(BST u) {
-	if(u.member(key)) {
-	    return left.union(right).diff(u);
-	} else {
-	    return new Branch(left.diff(u), key, right.diff(u));
-	}
+	return left.union(right).diff(u.remove(key));
     }
 
     public boolean equal(BST u) {
@@ -224,14 +221,29 @@ class Branch implements BST {
     }
 
     public String toString() {
-	return  "{" + key + " " + left.toString() + 
-	    " " + right.toString() + "}";
+	return  "{" + key + left.toString() +
+	    right.toString() + "}";
     }
 
 } 
 
 class Tests {
 
+    public static BST randBST(int size) {
+	BST temp = new Leaf();
+	for(; size > 0; size--) {
+	    temp = temp.add((int) ((Math.random()-.5) * 100));
+	}
+	return temp;
+    }
+    
+    //Test Methods
+    
+    //Tests whether |t U u| <= |t| + |u|
+    public static boolean testUnionSize(BST t, BST u) {
+	return t.union(u).cardinality() <= t.cardinality() + u.cardinality();
+    }
+    
     public static void main(String[] args) {
 	Leaf l = new Leaf();
 	Branch b1 = new Branch(l, 1, l);
@@ -242,13 +254,13 @@ class Tests {
 	Branch b8 = new Branch(b7, 8, b9);
 	Branch b5 = new Branch(b2, 5, b8);
 
-	BST c = new Leaf();
-	c = c.add(5).add(2).add(3).add(7).add(1);
-	BST d = c.add(3).add(1).add(2).add(5).add(7);
+	BST c = l.add(5).add(2).add(3).add(7).add(1);
+	BST d = l.add(3).add(1).add(2).add(5).add(7);
+	BST e = l.add(5).add(2).add(3).add(4);
 
 	
 	System.out.println("b5 should contain 1,2,3,7,9,2,8,5 - Does contain:\n" + b5);
-	System.out.println("should add 4 to previous BST to the left of 5"
+	System.out.println("should add 4 to previous BST to the left of 5 "
 			   + b5.add(4));
 	System.out.println("Cardinality of b5 should be 7, is " + b5.cardinality());
 	System.out.println("b5.member(7) should return true, does return:\n"
@@ -262,11 +274,23 @@ class Tests {
 			   + c.subset(b5));
 	System.out.println("c.union(b5) should return {1,2,3,5,7,8,9}, does return:\n"
 			   + c.union(b5));
-	System.out.println("c.inter(b5) should return c, does return:\n"
-			   + c.inter(b5));
+	System.out.println("c.inter(e) should return {5,2,3}, does return:\n"
+			   + c.inter(e));
 	System.out.println("c.equal(d) should return true, does return:\n " 
 			   + c.equal(d));
 	System.out.println("c.remove(5) should return {1,2,3,7}, does return:\n"
 			   + c.remove(5));
+
+	System.out.println("BST e is:\n" + e);
+	System.out.println("e.diff(c) should return {1,7}, does return:\n"
+			   + e.diff(c));
+
+	for(int i = 0; i < 100; i++) {
+	    BST temp1 = randBST(50);
+	    BST temp2 = randBST(50);
+	    if(!testUnionSize(temp1, temp2)) 
+		System.out.println("Union Size Failure");
+	    
+	}
     }
 }
