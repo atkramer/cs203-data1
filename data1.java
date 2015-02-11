@@ -206,7 +206,6 @@ class Branch implements BST {
 	}
     }
     
-    //CHANGED
     public BST diff(BST u) {
 	return left.union(right).diff(u.remove(key));
     }
@@ -239,11 +238,27 @@ class Tests {
     
     //Test Methods
     
-    //Tests whether |t U u| <= |t| + |u|
+    //Tests: |t U u| <= |t| + |u|
     public static boolean testUnionSize(BST t, BST u) {
 	return t.union(u).cardinality() <= t.cardinality() + u.cardinality();
     }
+   
+    //Tests: "member (add t x) y = true <-> x = y \/ member t y = true"
+    public static boolean testAddMembership(BST t, int x, int y) {
+	return t.add(x).member(y) == ( x == y || t.member(y) );
+    } 
+
+    //Tests: member (union s s') x = true <-> member s x = true \/ member s' x = true
+    public static boolean testUnionMembership(BST t, BST u, int x) {
+	return t.union(u).member(x) == ( t.member(x) || u.member(x) );
+    }
     
+    //Tests: member (inter s s') x = true <-> member s x = true /\ member s' x = true
+    public static boolean testInterMembership(BST t, BST u, int x) {
+	return t.inter(u).member(x) == ( t.member(x) && u.member(x) );
+    }
+
+
     public static void main(String[] args) {
 	Leaf l = new Leaf();
 	Branch b1 = new Branch(l, 1, l);
@@ -286,11 +301,34 @@ class Tests {
 			   + e.diff(c));
 
 	for(int i = 0; i < 100; i++) {
-	    BST temp1 = randBST(50);
-	    BST temp2 = randBST(50);
+	    BST temp1 = randBST(10);
+	    BST temp2 = randBST(10);
 	    if(!testUnionSize(temp1, temp2)) 
-		System.out.println("Union Size Failure");
+		System.out.println("Union Size Failure with BSTs " + temp1 + " and "
+				   + temp2);
 	    
+	}
+	
+	BST tester1 = randBST(20);
+	for(int x = -10; x < 10; x++) {
+	    for(int y = -10; y < 10; y++) {
+		if(!testAddMembership(tester1, x, y))
+		    System.out.println("Add Membership Failure on BST " + tester1 + 
+				       "where x = " + x + ", y = " + y);
+	    }
+	}
+
+	BST tester2 = randBST(20);
+	for(int x = -10; x < 10; x++) {
+	    if(!testUnionMembership(tester1, tester2, x))
+		System.out.println("Union Membership Failure on BSTs " + tester1 +
+				   " and " tester2 + ". x = " + x);
+	}
+	
+	for(int x = -10; x < 10; x++) {
+	    if(!testInterMembership(tester1, tester2, x))
+		System.out.println("Intersection Membership Failure on BSTs " 
+				   + tester1 +" and " tester2 + ". x = " + x)");
 	}
     }
 }
