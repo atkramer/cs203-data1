@@ -47,7 +47,7 @@ public class Tests {
 	return t.union(u).member(x) == ( t.member(x) || u.member(x) );
     }
     
-    //Tests: member (inter s s') x = true <-> member s x = true /\ member s' x = true
+    //Tests: member((inter t u) x) = true <-> member(t x) = true /\ member(u x) = true
     public static boolean testInterMembership(FiniteSet t, FiniteSet u, int x) {
 	return t.inter(u).member(x) == ( t.member(x) && u.member(x) );
     }
@@ -57,9 +57,14 @@ public class Tests {
 	return t.diff(u).member(x) == ( u.member(x) && !t.member(x) );
     }
 
-    //Tests: union(t u) = t <-> isEmpty(u)
-    public static boolean testEmptyUnion(FiniteSet t, FiniteSet u) {
-	return t.union(u).equals(t) == u.isEmptyHuh();
+    //Tests: union(t u) = t <-> subset(u t)
+    public static boolean testUnionSubset(FiniteSet t, FiniteSet u) {
+	return t.union(u).equal(t) == u.subset(t) ;
+    }
+
+    //Tests: intersect(t empty) = empty
+    public static boolean testIntersectEmpty(FiniteSet t) {
+	return t.inter(Leaf.empty()).equal(Leaf.empty());
     }
 
     //Tests: equal(t u) <-> subset(t u) /\ subset(u t)
@@ -84,7 +89,7 @@ public class Tests {
 	System.out.println("FiniteSet d is " + d);
 	System.out.println("FiniteSet e is " + e);
 	
-	System.out.println("b.add(4) should add 4 to previous FiniteSet to the left of 5:\n"
+	System.out.println("b.add(4) should add 4 should be {1,2,3,4,5,7,8,9}, is:\n"
 			   + b.add(4));
 	System.out.println("Cardinality of b should be 7, is:\n" + b.cardinality());
 	System.out.println("b.member(7) should be true, is:\n"
@@ -163,7 +168,7 @@ public class Tests {
 	//of x,y in a range slightly larger than the range of the ints in the set
 	for(int x = -30; x < 30; x++) {
 	    for(int y = -30; y < 30; y++) {
-		if(!testRemoveMembership(finiteSetA, x, y)) {
+		if(!testRemoveMembership(finiteSetB, x, y)) {
 		    System.out.println("Remove Membership Failure on FiniteSet:\n" + finiteSetB + 
 				       "\nwhere x = " + x + ", y = " + y);
 		    testsFailed++;
@@ -209,7 +214,45 @@ public class Tests {
 		testsFailed++;
 	    }
 	}
+	
 
+	int smallSizeRange = 5;
+	int smallIntRange = 5;
+
+	//Run testEquality with random sets of a small size range and small integer range
+	//to ensurethat both equivalent and non-equivalent set pairs will appear
+	for(int i = 0; i < 1000; i++) {
+	    FiniteSet temp1 = randFiniteSet(smallSizeRange, smallIntRange);
+	    FiniteSet temp2 = randFiniteSet(smallSizeRange, smallIntRange);
+	    if(!testEquality(temp1, temp2)) {
+		System.out.println("Equality Failure on FiniteSets\n" + temp1 +
+				   ",\n" + temp2);
+		testsFailed++;
+	    }
+	}
+
+	//Run testUnionSubset with random sets of a small size range and small integer range
+	// to ensure that set/subset pairs will appear
+	for(int i = 0; i < 1000; i++) {
+	    FiniteSet temp1 = randFiniteSet(smallSizeRange, smallIntRange);
+	    FiniteSet temp2 = randFiniteSet(smallSizeRange, smallIntRange);
+	    if(!testUnionSubset(temp1, temp2)) {
+		System.out.println("Union Subset Failure on FiniteSets\n" + temp1 +
+				   ",\n" + temp2);
+		testsFailed++;
+	    }
+	}
+	
+	//Run testIntersectEmpty with  random sets
+	for(int i = 0; i < 1000; i++) {
+	    FiniteSet temp1 = randFiniteSet(smallSizeRange, intRange);
+	    if(!testIntersectEmpty(temp1)) {
+		System.out.println("Empty Intersection Failure on FiniteSet\n" + temp1);
+		testsFailed++;
+	    }
+	}
+	    
+	
 	if(testsFailed == 0) {
 	    System.out.println("All tests passed!");
 	} else {
