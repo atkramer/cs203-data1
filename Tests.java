@@ -2,10 +2,19 @@ package data1;
 
 public class Tests {
 
-    public static FiniteSet randFiniteSet(int size) {
+    /**
+     * Generates a random FiniteSet
+     * @param sizeRange Integer specifying the range of sizes
+     * @param intRange Integer specifying the range of integers to include
+     *                 in the FiniteSet
+     * @return A new FiniteSet with size between 0 and sizeRange containing integers
+     *         between -1/2*intRange and 1/2*intRange
+     */
+    public static FiniteSet randFiniteSet(int sizeRange, int intRange) {
 	FiniteSet temp = new Leaf();
+	int size = (int) (sizeRange * Math.random());
 	for(; size > 0; size--) {
-	    temp = temp.add((int) ((Math.random()-.5) * 100));
+	    temp = temp.add((int) ((Math.random()-.5) * intRange));
 	}
 	return temp;
     }
@@ -76,10 +85,15 @@ public class Tests {
 	System.out.println("e.diff(c) should be {1,7}, is:\n"
 			   + e.diff(c));
 
+	System.out.println("5 random FiniteSets generated with randFiniteSet(20,50)\n" +
+			   randFiniteSet(20,50) + "\n" +
+			   randFiniteSet(20,50) + "\n" +
+			   randFiniteSet(20,50) + "\n" +
+			   randFiniteSet(20,50) + "\n" +
+			   randFiniteSet(20,50) + "\n");
 
-
-	FiniteSet finiteSetA = randFiniteSet(20);
-	FiniteSet finiteSetB = randFiniteSet(20);
+	FiniteSet finiteSetA = randFiniteSet(20,50);
+	FiniteSet finiteSetB = randFiniteSet(20,50);
 	FiniteSet emptySet = Leaf.empty();
 
 	//Tests on properties of Finite Sets
@@ -96,8 +110,8 @@ public class Tests {
 	
 
 	for(int i = 0; i < 100; i++) {
-	    FiniteSet temp1 = randFiniteSet(10);
-	    FiniteSet temp2 = randFiniteSet(10);
+	    FiniteSet temp1 = randFiniteSet(20,50);
+	    FiniteSet temp2 = randFiniteSet(20,50);
 	    if(!testUnionSize(temp1, temp2)) 
 		System.out.println("Union Size Failure with FiniteSets:\n" + temp1 + ",\n"
 				   + temp2);
