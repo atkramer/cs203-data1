@@ -89,6 +89,8 @@ public class Tests {
 	System.out.println("FiniteSet d is " + d);
 	System.out.println("FiniteSet e is " + e);
 	
+	System.out.println("l.isEmptyHuh should be true, is:\n" + l.isEmptyHuh());
+	System.out.println("b.isEmptyHuh should be false, is:\n" + b.isEmptyHuh());
 	System.out.println("b.add(4) should add 4 should be {1,2,3,4,5,7,8,9}, is:\n"
 			   + b.add(4));
 	System.out.println("Cardinality of b should be 7, is:\n" + b.cardinality());
@@ -104,7 +106,7 @@ public class Tests {
 			   + c.union(b));
 	System.out.println("c.inter(e) should be {5,2,3}, is:\n"
 			   + c.inter(e));
-	System.out.println("c.equal(d) should be true, is:\n " 
+	System.out.println("c.equal(d) should be true, is:\n" 
 			   + c.equal(d));
 	System.out.println("c.remove(5) should be {1,2,3,7}, is:\n"
 			   + c.remove(5));
